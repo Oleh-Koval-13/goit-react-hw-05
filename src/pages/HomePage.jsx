@@ -1,6 +1,6 @@
 import MovieList from '../components/MovieList/MovieList';
 import { useLocation } from 'react-router-dom';
-import useFetch from '../utils/useFetch';
+import useFetch from '../requests/useFetch';
 import Error from '../components/Error/Error';
 import Loading from '../components/Loading/Loading';
 

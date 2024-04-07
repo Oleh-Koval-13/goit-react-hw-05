@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
-import tmdbAPI from '../../utils/tmdb-api';
-import useFetch from '../../utils/useFetch';
+import tmdbAPI from '../../requests/tmdb-api';
+import useFetch from '../../requests/useFetch';
 import Error from '../Error/Error';
 import Loading from '../Loading/Loading';
 import styles from './MovieCast.module.css';

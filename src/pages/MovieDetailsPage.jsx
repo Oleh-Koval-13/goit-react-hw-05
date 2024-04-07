@@ -1,8 +1,8 @@
 import { useRef, Suspense } from 'react';
 import { Link, Outlet, useParams, useLocation } from 'react-router-dom';
-import tmdbAPI from '../utils/tmdb-api';
+import tmdbAPI from '../requests/tmdb-api';
 import GoBack from '../components/GoBack/GoBack';
-import useFetch from '../utils/useFetch';
+import useFetch from '../requests/useFetch';
 import Error from '../components/Error/Error';
 import Loading from '../components/Loading/Loading';
 import styles from './MovieDetailsPage.module.css';

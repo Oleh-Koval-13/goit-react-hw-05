@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import MovieList from '../components/MovieList/MovieList';
 import Form from '../components/Form/Form';
-import useFetch from '../utils/useFetch';
+import useFetch from '../requests/useFetch';
 import Error from '../components/Error/Error';
 import Loading from '../components/Loading/Loading';
 

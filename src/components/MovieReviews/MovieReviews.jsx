@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import useFetch from '../../utils/useFetch';
+import useFetch from '../../requests/useFetch';
 import Error from '../Error/Error';
 import Loading from '../Loading/Loading';
 
@@ -17,7 +17,7 @@ export default function MoviesRewiews() {
       {isLoading && <Loading />}
       {error && <Error message={error} />}
       {id && results.length === 0 && (
-        <p>We don't post have any review for this movie</p>
+        <p>We dont post have any review for this movie</p>
       )}
       {id && results.length > 0 && (
         <ul>

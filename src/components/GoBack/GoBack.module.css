@@ -1,0 +1,8 @@
+.button {
+    display: block;
+    background-color: beige;
+    padding: 4px 8px;
+    border-width: 1px;
+    margin-bottom: 8px;
+    max-width: fit-content;
+}
