@@ -4,10 +4,10 @@ import MovieCast from './components/MovieCast/MovieCast';
 import MovieReviews from './components/MovieReviews/MovieReviews';
 import { Suspense, lazy } from 'react';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
-const MoviesPage = lazy(() => import('./pages/MoviesPage'));
-const MovieDetailsPage = lazy(() => import('./pages/MovieDetailsPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const HomePage = lazy(() => import('./components/pages/HomePage'));
+const MoviesPage = lazy(() => import('./components/pages/MoviesPage'));
+const MovieDetailsPage = lazy(() => import('./components/pages/MovieDetailsPage'));
+const NotFoundPage = lazy(() => import('./components/pages/NotFoundPage'));
 const Navigation = lazy(() => import("./components/Navigation/Navigation"));
 
 
