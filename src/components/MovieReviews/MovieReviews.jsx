@@ -1,41 +1,34 @@
-import { useState, useEffect } from 'react';
-import fetchMovieReviews from '../../assets/requests/reviews-api';
 import { useParams } from 'react-router-dom';
-import css from "./MovieReviews.module.css";
+import useFetch from '../../utils/useFetch';
+import Error from '../Error/Error';
+import Loading from '../Loading/Loading';
 
-const MovieReviews = () => {
+export default function MoviesRewiews() {
   const { movieId } = useParams();
-  const [reviews, setReviews] = useState([]);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const fetchedReviews = await fetchMovieReviews(movieId);
-        setReviews(fetchedReviews);
-      } catch (error) {
-        console.error("Error fetching movie reviews:", error);
-      }
-    };
-
-    fetchReviews();
-  }, [movieId]);
+  const { data, isLoading, error } = useFetch({
+    component: 'movieReviews',
+    param: movieId,
+    data: {},
+  });
+  const { id, results } = data;
 
   return (
-    <div>
-      {reviews.length > 0 ? (
+    <>
+      {isLoading && <Loading />}
+      {error && <Error message={error} />}
+      {id && results.length === 0 && (
+        <p>We don't post have any review for this movie</p>
+      )}
+      {id && results.length > 0 && (
         <ul>
-          {reviews.map((review, index) => (
-            <li key={index}>
-              <p className={css.rewiewTitle}>Author: {review.author}</p>
-              <p>{review.content}</p>
+          {results.map(rev => (
+            <li key={rev.id}>
+              <h4>{`Author: ${rev.author}`}</h4>
+              <p>{rev.content}</p>
             </li>
           ))}
         </ul>
-      ) : (
-        <p>We dont have any reviews for this movie.</p>
       )}
-    </div>
+    </>
   );
-};
-
-export default MovieReviews;
+}

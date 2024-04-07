@@ -1,68 +1,85 @@
-import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import fetchMovieDetails from '../assets/requests/details-api.js';
-import css from "./MovieDetailsPage.module.css";
-import { Suspense } from 'react';
+import { useRef, Suspense } from 'react';
+import { Link, Outlet, useParams, useLocation } from 'react-router-dom';
+import tmdbAPI from '../utils/tmdb-api';
+import GoBack from '../components/GoBack/GoBack';
+import useFetch from '../utils/useFetch';
+import Error from '../components/Error/Error';
+import Loading from '../components/Loading/Loading';
+import styles from './MovieDetailsPage.module.css';
 
-const MovieDetailsPage = () => {
-  const { movieId } = useParams();
+export default function MovieDetailsPage() {
   const location = useLocation();
-  const [movieDetails, setMovieDetails] = useState(null);
-  const locationStateRef = useRef(location.state);
+  const { movieId } = useParams();
+  const backLink = useRef(
+    location.state?.from ?? location.state?.defLocation ?? '/'
+  );
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const details = await fetchMovieDetails(movieId);
-        setMovieDetails(details);
-      } catch (error) {
-        console.error("Error fetching movie details:", error);
-      }
-    };
+  const {
+    data: movie,
+    isLoading,
+    error,
+  } = useFetch({
+    component: 'movieDetailsPage',
+    param: movieId,
+    data: {},
+  });
 
-    fetchDetails();
-  }, [movieId]);
+  const {
+    vote_average: voteAverage,
+    genres,
+    id,
+    poster_path: posterPath,
+    title,
+    overview,
+    release_date: releaseDate,
+  } = movie;
 
-  useEffect(() => {
-    locationStateRef.current = location.state;
-  }, [location.state]);
-
-  const backLinkHref = locationStateRef.current?.from ?? "/";
+  const poster = posterPath && `${tmdbAPI.posterImagePath}${posterPath}`;
+  const releaseYear = releaseDate && releaseDate.slice(0, 4);
+  const userScore = Math.round(voteAverage * 10);
+  const movieGenres = genres && genres.map(genre => genre.name).join(', ');
 
   return (
-    <div>
-      <button type='button' className={css.backlink}><Link to={backLinkHref}>Go Back</Link></button>
-      {movieDetails ? (
-        <div className={css.detailsPage}>
-          {movieDetails.poster_path && (
+    <div className="page-container">
+      {isLoading && <Loading />}
+      {error && <Error message={error} />}
+      {id && (
+        <>
+          <GoBack to={backLink.current}>&larr; Go back</GoBack>
+          <div className={styles.infoContainer}>
             <img
-              width={"270px"}
-              src={`https://image.tmdb.org/t/p/w500/${movieDetails.poster_path}`}
-              alt="Movie Poster"
+              className={styles.poster}
+              src={poster}
+              alt={`${title} poster image`}
+              loading="lazy"
             />
-          )}
-          <div>
-           <h3>{movieDetails.title}<span> ({movieDetails.release_date ? movieDetails.release_date.slice(0, 4) : ''})</span></h3>
-           <p>User Score: {Math.round(movieDetails.vote_average * 10)}%</p>
-           <p className={css.detailsTitle}>Overview</p><p>{movieDetails.overview}</p>
-           <p className={css.detailsTitle}>Genres</p><p>{movieDetails.genres.map(genre => genre.name).join(', ')}</p>
+            <div>
+              <h2>
+                {title} ({releaseYear})
+              </h2>
+              <p>{`User score: ${userScore}%`}</p>
+              <h3>Overview</h3>
+              <p>{overview}</p>
+              <h3>Genres</h3>
+              <p>{movieGenres}</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <p>Loading...</p>
+          <hr />
+          <p>Additional information</p>
+          <ul>
+            <li>
+              <Link to="cast">Cast</Link>
+            </li>
+            <li>
+              <Link to="reviews">Reviews</Link>
+            </li>
+          </ul>
+          <hr />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        </>
       )}
-      <div className={css.additionalInfo}>
-        <p className={css.detailsTitle}>Additional Information</p>
-        <div className={css.linkContainer}>
-         <Link to={`/movies/${movieId}/cast`} className={css.link}>Cast</Link>
-         <Link to={`/movies/${movieId}/reviews`} className={css.link}>Reviews</Link>
-        </div>
-      </div>
-      <Suspense fallback={<div></div>}>
-        <Outlet />
-      </Suspense>
     </div>
   );
-};
-
-export default MovieDetailsPage;
+}

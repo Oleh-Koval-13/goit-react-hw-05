@@ -1,59 +1,42 @@
-import { useState, useEffect } from 'react';
-import fetchMovieCredits from '../../assets/requests/credits-api';
 import { useParams } from 'react-router-dom';
-import css from "./MovieCast.module.css";
+import tmdbAPI from '../../utils/tmdb-api';
+import useFetch from '../../utils/useFetch';
+import Error from '../Error/Error';
+import Loading from '../Loading/Loading';
+import styles from './MovieCast.module.css';
 
-const baseUrl = 'https://image.tmdb.org/t/p/w500/';
-
-const MovieCast = () => {
+export default function MoviesCast() {
   const { movieId } = useParams();
-  const [cast, setCast] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchCast = async () => {
-      setLoading(true);
-      try {
-        const castData = await fetchMovieCredits(movieId);
-        setCast(castData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching movie cast:", error);
-        setError('Error fetching movie cast. Please try again later.');
-        setLoading(false);
-      }
-    };
-
-    fetchCast();
-  }, [movieId]);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const { data, isLoading, error } = useFetch({
+    component: 'movieCast',
+    param: movieId,
+    data: {},
+  });
+  const { id, cast } = data;
 
   return (
-    <div>
-      <ul className={css.castList}>
-        {cast.map(actor => (
-          <li key={actor.id}>
-            {actor.profile_path && (
+    <>
+      {isLoading && <Loading />}
+      {error && <Error message={error} />}
+      {id && cast.length === 0 && (
+        <p>We don&apos;t have any credits for this movie</p>
+      )}
+      {id && cast.length > 0 && (
+        <ul className={styles.list}>
+          {cast.map(actor => (
+            <li key={actor.id} className={styles.item}>
               <img
-                src={`${baseUrl}${actor.profile_path}`}
-                alt={actor.name}
-                style={{ width: '100px', height: '150px' }}
+                className={styles.photo}
+                src={`${tmdbAPI.posterImagePath}${actor.profile_path}`}
+                alt={`${actor.name} photo`}
+                loading="lazy"
               />
-            )}
-            <p>{actor.name}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+              <h4 className={styles.nameText}>{actor.name}</h4>
+              <p className={styles.charText}>Character: {actor.character}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
-};
-
-export default MovieCast;
+}

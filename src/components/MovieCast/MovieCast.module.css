@@ -1,6 +1,24 @@
-.castList {
-    list-style-type: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 50px;
-  }
+.list {
+  display: flex;
+  column-gap: 16px;
+  row-gap: 20px;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.item {
+  max-width: 10vw;
+}
+
+.photo {
+  width: 100%;
+}
+
+.nameText {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.charText {
+  margin: 0;
+}
